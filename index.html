@@ -1,0 +1,350 @@
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G-Corp | Inovação Sistêmica</title>
+    <style>
+        /* --- RESET E BASE --- */
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background-color: #050505; color: #ffffff; overflow-x: hidden; line-height: 1.6; scroll-behavior: smooth; }
+
+        /* --- ANIMAÇÃO INTRO --- */
+        #intro-screen {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: radial-gradient(circle at center, #1a1a1a 0%, #000000 100%);
+            display: flex; justify-content: center; align-items: center;
+            z-index: 9999; transition: opacity 1s ease-out;
+        }
+        .ps3-wave {
+            position: absolute; width: 200vw; height: 100vh;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            animation: sweep 2s ease-in-out forwards; transform: skewX(-45deg);
+        }
+        .gcorp-logo-intro {
+            font-size: 4.5rem; font-weight: 800; letter-spacing: 8px; opacity: 0;
+            animation: fadeInOut 2.5s ease-in-out forwards; text-shadow: 0 0 20px rgba(255, 255, 255, 0.3); z-index: 2;
+        }
+        @keyframes sweep { 0% { left: -100vw; } 100% { left: 100vw; } }
+        @keyframes fadeInOut { 0% { opacity: 0; transform: scale(0.95); } 30% { opacity: 1; transform: scale(1); } 80% { opacity: 1; transform: scale(1); } 100% { opacity: 0; transform: scale(1.05); } }
+
+        /* --- ANIMAÇÃO DE ROLAGEM (Scroll Reveal) --- */
+        .scroll-animate {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .scroll-animate.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* --- ESTRUTURA PRINCIPAL --- */
+        #main-content { opacity: 0; transition: opacity 1.5s ease-in; display: none; }
+        
+        /* Cabeçalho com Animação de Brilho */
+        header { text-align: center; padding: 60px 20px 40px; border-bottom: 1px solid #111; background: #0a0a0a; }
+        header h1 { 
+            font-size: 3.5rem; letter-spacing: 6px; font-weight: 900; 
+            /* Efeito de Varredura Metálica */
+            background: linear-gradient(90deg, #444 0%, #fff 50%, #444 100%);
+            background-size: 200% auto; color: transparent; -webkit-background-clip: text;
+            animation: shine 3s linear infinite;
+        }
+        @keyframes shine { to { background-position: 200% center; } }
+        header p { color: #888; font-size: 1rem; letter-spacing: 3px; text-transform: uppercase; margin-top: 10px; }
+
+        section { max-width: 1000px; margin: 0 auto; padding: 80px 20px; border-bottom: 1px solid #111; }
+        section h2 { font-size: 2rem; margin-bottom: 30px; display: flex; align-items: center; gap: 10px; }
+        section h2::before { content: ""; display: block; width: 8px; height: 25px; background: #fff; }
+        .about-text { color: #ccc; font-size: 1.15rem; text-align: justify; }
+
+        /* --- PORTFÓLIO E CARDS --- */
+        .portfolio-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-top: 30px; }
+        .project-card {
+            background: #0f0f0f; border: 1px solid #222; border-radius: 8px; overflow: hidden;
+            transition: all 0.3s ease; display: flex; flex-direction: column; height: 100%;
+        }
+        .project-card:hover { border-color: #555; transform: translateY(-8px); box-shadow: 0 15px 30px rgba(0,0,0,0.6); }
+        .card-img-top { width: 100%; height: 200px; object-fit: cover; border-bottom: 1px solid #222; filter: grayscale(40%); transition: filter 0.3s; }
+        .project-card:hover .card-img-top { filter: grayscale(0%); }
+        .card-body { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
+        .project-title { font-size: 1.5rem; font-weight: bold; margin-bottom: 10px; color: #fff; }
+        .project-desc { color: #aaa; font-size: 0.95rem; margin-bottom: 25px; flex-grow: 1; }
+        
+        .project-tactical-data { background: #080808; border: 1px solid #1a1a1a; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
+        .data-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; font-size: 0.85rem; }
+        .data-row:last-child { margin-bottom: 0; }
+        .data-label { color: #666; text-transform: uppercase; font-weight: bold; letter-spacing: 1px; }
+        .data-value { color: #fff; font-weight: bold; display: flex; align-items: center; gap: 10px; }
+        .difficulty-bar { width: 50px; height: 6px; background: #222; border-radius: 3px; overflow: hidden; }
+        .difficulty-fill { height: 100%; }
+        .diff-medium { width: 50%; background: #eab308; } 
+        .diff-high { width: 75%; background: #f97316; }   
+        .diff-extreme { width: 95%; background: #ef4444; } 
+
+        .card-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; flex-wrap: wrap; gap: 10px; }
+        .status-badge { padding: 6px 12px; border-radius: 4px; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; }
+        .status-active { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid #10b981; }
+        .status-dev { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid #ef4444; }
+        
+        .btn-card {
+            padding: 8px 16px; background: #ffffff; color: #000000; text-decoration: none; 
+            border-radius: 4px; font-size: 0.8rem; font-weight: bold; text-transform: uppercase; 
+            transition: background 0.3s, transform 0.1s; text-align: center;
+        }
+        .btn-card:hover { background: #cccccc; }
+        .btn-card:active { transform: scale(0.95); }
+
+        /* --- FORMULÁRIO --- */
+        .gcorp-form { background: #0f0f0f; padding: 40px; border-radius: 8px; border: 1px solid #222; }
+        .form-group { margin-bottom: 25px; }
+        label { display: block; margin-bottom: 8px; color: #bbb; font-size: 0.9rem; font-weight: bold; }
+        input, select, textarea { width: 100%; padding: 14px; background: #050505; border: 1px solid #333; color: #fff; border-radius: 4px; outline: none; transition: border-color 0.3s; font-size: 1rem; }
+        input:focus, select:focus, textarea:focus { border-color: #fff; }
+        textarea { resize: vertical; min-height: 120px; }
+        .btn-submit { width: 100%; padding: 18px; background: #ffffff; color: #000000; border: none; border-radius: 4px; font-size: 1.1rem; font-weight: bold; cursor: pointer; transition: background 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-submit:hover { background: #e0e0e0; }
+
+        /* --- FOOTER (RODAPÉ) --- */
+        .gcorp-footer { background: #080808; border-top: 1px solid #111; padding: 50px 20px 20px; margin-top: 60px; }
+        .footer-content { max-width: 1000px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 40px; margin-bottom: 40px; }
+        .footer-brand h3 { font-size: 1.8rem; letter-spacing: 3px; margin-bottom: 15px; color: #fff; }
+        .footer-brand p { color: #666; font-size: 0.9rem; }
+        .footer-links h4, .footer-contact h4 { color: #fff; margin-bottom: 15px; font-size: 1.1rem; text-transform: uppercase; letter-spacing: 1px; }
+        .footer-links a { display: block; color: #888; text-decoration: none; margin-bottom: 10px; transition: color 0.3s; }
+        .footer-links a:hover { color: #fff; }
+        .footer-contact p { color: #888; margin-bottom: 10px; font-size: 0.95rem; }
+        .footer-bottom { text-align: center; color: #444; padding-top: 20px; border-top: 1px solid #111; font-size: 0.85rem; }
+
+        /* --- RESPONSIVIDADE (Mobile) --- */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2.2rem; }
+            section { padding: 50px 15px; }
+            .gcorp-form { padding: 25px 15px; }
+            .card-footer { flex-direction: column; align-items: flex-start; }
+            .btn-card { width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="intro-screen">
+        <div class="ps3-wave"></div>
+        <div class="gcorp-logo-intro">G-CORP</div>
+    </div>
+
+    <div id="main-content">
+        
+        <header>
+            <h1>G-CORP</h1>
+            <p>Engenharia de Software & Sistemas</p>
+        </header>
+
+        <section id="sobre" class="scroll-animate">
+            <h2>Quem somos</h2>
+            <p class="about-text">
+                A G-Corp é um laboratório de desenvolvimento e inovação focado em construir soluções sistêmicas de alta performance. 
+                Nascemos para preencher a lacuna entre problemas reais e tecnologia eficiente. Nossa missão não é apenas escrever código, 
+                mas arquitetar plataformas robustas que automatizam, organizam e escalam negócios.
+            </p>
+        </section>
+
+        <section id="portfolio" class="scroll-animate">
+            <h2>Ecossistema de Projetos</h2>
+            <div class="portfolio-grid">
+                
+                <div class="project-card scroll-animate">
+                    <img src="barrabicoss.png" alt="Barra Bicos" class="card-img-top">
+                    <div class="card-body">
+                        <div class="project-title">Barra Bicos</div>
+                        <p class="project-desc">Plataforma inteligente desenhada para conectar profissionais independentes e prestadores de serviços à comunidade local.</p>
+                        <div class="project-tactical-data">
+                            <div class="data-row"> <span class="data-label">Conclusão:</span> <span class="data-value">4 Semanas</span> </div>
+                            <div class="data-row"> <span class="data-label">Complexidade:</span> <span class="data-value">Médio <div class="difficulty-bar"><div class="difficulty-fill diff-medium"></div></div></span> </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge status-active">Sistema Ativo</span>
+                            <a href="https://barrabicos.netlify.app/" target="_blank" class="btn-card">Acessar Sistema</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card scroll-animate">
+                    <img src="carregando.jpeg" alt="Sistema Ink" class="card-img-top">
+                    <div class="card-body">
+                        <div class="project-title">Sistema Ink. [Codinome]</div>
+                        <p class="project-desc">Plataforma focada no agendamento e gerenciamento de horários para o fluxo de trabalho de estúdios de tatuagem.</p>
+                        <div class="project-tactical-data">
+                            <div class="data-row"> <span class="data-label">Conclusão:</span> <span class="data-value">8 Semanas</span> </div>
+                            <div class="data-row"> <span class="data-label">Complexidade:</span> <span class="data-value">Alto <div class="difficulty-bar"><div class="difficulty-fill diff-high"></div></div></span> </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge status-dev">Em Desenvolvimento</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="project-card scroll-animate">
+                    <img src="carregando.jpeg" alt="Aero Schedule" class="card-img-top">
+                    <div class="card-body">
+                        <div class="project-title">Aero Schedule [Codinome]</div>
+                        <p class="project-desc">Sistema de roteamento e reservas para profissionais especializados em instalação e manutenção de ar condicionado.</p>
+                        <div class="project-tactical-data">
+                            <div class="data-row"> <span class="data-label">Conclusão:</span> <span class="data-value">12 Semanas</span> </div>
+                            <div class="data-row"> <span class="data-label">Complexidade:</span> <span class="data-value">Extremo <div class="difficulty-bar"><div class="difficulty-fill diff-extreme"></div></div></span> </div>
+                        </div>
+                        <div class="card-footer">
+                            <span class="status-badge status-dev">Em Desenvolvimento</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <section id="contato" class="scroll-animate" style="border-bottom: none;">
+            <h2>Entre em contato</h2>
+            <form class="gcorp-form" id="contactForm">
+                <div class="form-group"> <label for="nome">Entidade / Nome / Empresa</label> <input type="text" id="nome" required placeholder="Ex: Mercado do João"> </div>
+                <div class="form-group"> <label for="email">E-mail de Comunicação</label> <input type="email" id="email" required placeholder="diretoria@empresa.com"> </div>
+                <div class="form-group"> <label for="whatsapp">Terminal de Contato (WhatsApp)</label> <input type="tel" id="whatsapp" required placeholder="(00) 00000-0000"> </div>
+                <div class="form-group"> <label for="necessidade">Especificações do Projeto</label> <textarea id="necessidade" required placeholder="Descreva a arquitetura da solução..."></textarea> </div>
+                <div class="form-group"> <label for="prazo">Janela de Tempo (Prazo)</label> 
+                    <select id="prazo" required>
+                        <option value="" disabled selected>Defina a prioridade do projeto</option>
+                        <option value="urgente">Prioridade Máxima (Urgente)</option>
+                        <option value="curto">Curto Prazo (1 a 3 meses)</option>
+                        <option value="medio">Médio Prazo (3 a 6 meses)</option>
+                    </select>
+                </div>
+                <div class="form-group"> <label for="investimento">Aporte de Investimento (R$)</label> <input type="text" id="investimento" required placeholder="Ex: 5.000,00"> </div>
+                <button type="submit" class="btn-submit">TConcluir</button>
+            </form>
+        </section>
+
+        <footer class="gcorp-footer scroll-animate">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>G-CORP</h3>
+                    <p>Sistemas Inteligentes e Arquitetura de Software para o futuro dos negócios.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Protocolos</h4>
+                    <a href="#sobre">Quem somos</a>
+                    <a href="#portfolio">Ecossistema (Projetos)</a>
+                    <a href="#contato">Entrar em contato</a>
+                </div>
+                <div class="footer-contact">
+                    <h4>Central de Comando</h4>
+                    <p>Sede Operacional: Barra dos Coqueiros, SE</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                &copy; 2026 G-Corp. Todos os direitos reservados.
+            </div>
+        </footer>
+
+    </div>
+
+    <div id="popup" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.95); justify-content: center; align-items: center; z-index: 1000;">
+        <div class="popup-content" style="background: #0f0f0f; padding: 40px; border-radius: 8px; text-align: center; border: 1px solid #333; max-width: 450px;">
+            <h2 style="margin-bottom: 15px;">Envio Concluído</h2>
+            <p style="color: #aaa; margin-bottom: 30px;">Sua requisição foi enviada. Um administrador analisará os dados e entrará em contato.</p>
+            <button class="btn-close" onclick="fecharPopup()" style="padding: 12px 25px; background: transparent; color: #fff; border: 1px solid #fff; cursor: pointer; border-radius: 4px; font-weight: bold;">Encerrar Conexão</button>
+        </div>
+    </div>
+
+    <script>
+    // --- LÓGICA DA ANIMAÇÃO DE ENTRADA ---
+    setTimeout(() => {
+        const intro = document.getElementById('intro-screen');
+        const main = document.getElementById('main-content');
+        intro.style.opacity = '0';
+        setTimeout(() => {
+            intro.style.display = 'none';
+            main.style.display = 'block';
+            setTimeout(() => { main.style.opacity = '1'; }, 50);
+        }, 800); 
+    }, 2700);
+
+    // --- PROTOCOLOS DE SEGURANÇA E VALIDAÇÃO ---
+
+    // 1. Bloqueio de Caracteres no WhatsApp (Apenas Números)
+    const inputWhatsapp = document.getElementById('whatsapp');
+    inputWhatsapp.addEventListener('input', function(e) {
+        // A expressão regular /\D/g busca tudo que NÃO for número e substitui por vazio
+        this.value = this.value.replace(/\D/g, '');
+    });
+
+    // 2. Filtro de Palavras Impróprias (Adicione suas palavras aqui)
+    const palavrasBloqueadas = [
+        'pica', 
+        'puta', 
+        'cadela',
+        'gozar',
+        'boquete',
+        'piroca',
+        'penisvaldo',
+        'estuprilson',
+        'estrupoplays',
+        'estrupo',
+        'gozando',
+        'bananilson',
+        'jeguelson',
+        'buceta',
+        'cu',
+        'cuzinho',
+        'cucabeludo',
+        'deidecosta',
+        'vintecomer70correr',
+        'macaco',
+        'macacore',
+        'bostil',
+        'bananil',
+        'merda',
+        'merdil'
+    ];
+
+    function contemTermoImproprio(texto) {
+        // Converte o texto para minúsculo para a verificação não falhar por causa de letras maiúsculas
+        const textoLimpo = texto.toLowerCase();
+        // Verifica se alguma palavra da lista existe no texto digitado
+        return palavrasBloqueadas.some(palavra => textoLimpo.includes(palavra.toLowerCase()));
+    }
+
+    const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if(entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                } else {
+                    entry.target.classList.remove('visible'); // Faz desaparecer ao rolar a tela
+                }
+            });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.scroll-animate').forEach(el => observer.observe(el));
+
+    // --- INTERCEPTAÇÃO DO FORMULÁRIO ---
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault(); // Impede o envio padrão
+
+        const nome = document.getElementById('nome').value;
+        const necessidade = document.getElementById('necessidade').value;
+
+        // Validação do Filtro
+        if (contemTermoImproprio(nome) || contemTermoImproprio(necessidade)) {
+            // Alerta estilo sistema operacional rejeitando a ação
+            alert('ERRO. Palavras não permitidas no formulário. Por favor, revise os dados informados.');
+            return; // Interrompe a execução aqui, o pop-up de sucesso não abre
+        }
+
+        // Se passar por todas as travas de segurança, exibe a confirmação
+        document.getElementById('popup').style.display = 'flex';
+    });
+
+    function fecharPopup() {
+        document.getElementById('popup').style.display = 'none';
+        document.getElementById('contactForm').reset();
+    }
+</script>
+</body>
+</html>
